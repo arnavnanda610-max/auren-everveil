@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Wiki &amp; Lore Archive — AUREN: EVERVEIL | VYRON STUDIO</title>
+  <meta name="description" content="Official character archive, worldbuilding lore, weapons, and cosmology guide for the dark fantasy manga Auren: Everveil by VYRON STUDIO." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg-primary: #07070b;
+      --bg-secondary: #0e0e16;
+      --bg-card: #12121c;
+      --bg-card-hover: #171724;
+      --border-subtle: rgba(255, 255, 255, 0.08);
+      --border-accent: rgba(168, 85, 247, 0.45);
+      --text-primary: #f4f4f8;
+      --text-secondary: #a1a1b5;
+      --text-muted: #6c6c84;
+      --accent-primary: #9333ea;
+      --accent-glow: #c084fc;
+      --accent-crimson: #e11d48;
+      --font-display: 'Cinzel', Georgia, serif;
+      --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      font-family: var(--font-body);
+      line-height: 1.65;
+      min-height: 100vh;
+      background-image: radial-gradient(circle at 50% 0%, rgba(147, 51, 234, 0.12), transparent 55%);
+    }
+
+    /* Navigation matching index.html */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(7, 7, 11, 0.88);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    nav {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 1rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .brand {
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: 1.15rem;
+      letter-spacing: 0.14em;
+      color: var(--text-primary);
+      text-decoration: none;
+    }
+
+    .brand span {
+      color: var(--accent-glow);
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 1.75rem;
+    }
+
+    .nav-links a {
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: color 0.2s ease;
+    }
+
+    .nav-links a:hover,
+    .nav-links a.active {
+      color: var(--text-primary);
+    }
+
+    .nav-links a.active {
+      border-bottom: 2px solid var(--accent-glow);
+      padding-bottom: 2px;
+    }
+
+    .read-cta {
+      background: rgba(147, 51, 234, 0.16);
+      border: 1px solid var(--border-accent);
+      color: var(--text-primary);
+      padding: 0.45rem 1rem;
+      border-radius: 4px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+
+    .read-cta:hover {
+      background: var(--accent-primary);
+      box-shadow: 0 0 18px rgba(147, 51, 234, 0.45);
+    }
+
+    /* Wiki Header Banner */
+    .wiki-hero {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 3.5rem 1.5rem 2rem;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .eyebrow {
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      color: var(--accent-glow);
+      margin-bottom: 0.6rem;
+      font-weight: 600;
+    }
+
+    .wiki-hero h1 {
+      font-family: var(--font-display);
+      font-size: clamp(2rem, 4vw, 3rem);
+      letter-spacing: 0.08em;
+      line-height: 1.15;
+      margin-bottom: 0.75rem;
+    }
+
+    .wiki-hero p {
+      color: var(--text-secondary);
+      max-width: 680px;
+      font-size: 0.98rem;
+    }
+
+    /* Controls Bar: Search, Filters, Spoiler Toggle */
+    .controls-bar {
+      max-width: 1200px;
+      margin: 1.75rem auto;
+      padding: 0 1.5rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .search-box {
+      flex: 1 1 260px;
+      max-width: 380px;
+      position: relative;
+    }
+
+    .search-box input {
+      width: 100%;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-primary);
+      padding: 0.65rem 1rem;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .search-box input:focus {
+      border-color: var(--accent-glow);
+    }
+
+    .filter-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .filter-btn {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-secondary);
+      padding: 0.5rem 0.95rem;
+      border-radius: 6px;
+      font-size: 0.84rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .filter-btn:hover,
+    .filter-btn.active {
+      background: rgba(147, 51, 234, 0.18);
+      border-color: var(--border-accent);
+      color: var(--text-primary);
+    }
+
+    .spoiler-toggle {
+      display: flex;
+      align-items: center;
+      gap: 0.55rem;
+      background: rgba(225, 29, 72, 0.1);
+      border: 1px solid rgba(225, 29, 72, 0.35);
+      padding: 0.45rem 0.85rem;
+      border-radius: 6px;
+      font-size: 0.82rem;
+      color: #fda4af;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .spoiler-toggle input {
+      accent-color: var(--accent-crimson);
+      cursor: pointer;
+    }
+
+    /* Main Wiki Grid */
+    .wiki-container {
+      max-width: 1200px;
+      margin: 0 auto 4rem;
+      padding: 0 1.5rem;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .wiki-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.22s ease, border-color 0.22s ease;
+    }
+
+    .wiki-card:hover {
+      transform: translateY(-3px);
+      border-color: var(--border-accent);
+      background: var(--bg-card-hover);
+    }
+
+    .card-banner {
+      height: 210px;
+      background: linear-gradient(135deg, #161326 0%, #0b0b12 100%);
+      position: relative;
+      overflow: hidden;
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .card-banner img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: top center;
+    }
+
+    .card-banner .placeholder-sigil {
+      font-family: var(--font-display);
+      font-size: 2.2rem;
+      letter-spacing: 0.2em;
+      color: rgba(192, 132, 252, 0.22);
+      text-transform: uppercase;
+    }
+
+    .category-badge {
+      position: absolute;
+      top: 0.75rem;
+      left: 0.75rem;
+      background: rgba(7, 7, 11, 0.85);
+      border: 1px solid var(--border-subtle);
+      color: var(--accent-glow);
+      font-size: 0.72rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      padding: 0.25rem 0.6rem;
+      border-radius: 4px;
+    }
+
+    .card-body {
+      padding: 1.35rem;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card-title {
+      font-family: var(--font-display);
+      font-size: 1.3rem;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.2rem;
+    }
+
+    .card-subtitle {
+      font-size: 0.82rem;
+      color: var(--accent-glow);
+      margin-bottom: 1rem;
+      font-weight: 500;
+    }
+
+    /* Infobox Spec Table inside Card */
+    .infobox-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 1rem;
+      font-size: 0.83rem;
+      background: rgba(0, 0, 0, 0.25);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    .infobox-table td {
+      padding: 0.45rem 0.65rem;
+      border-bottom: 1px solid var(--border-subtle);
+      vertical-align: top;
+    }
+
+    .infobox-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .infobox-label {
+      color: var(--text-muted);
+      font-weight: 600;
+      width: 36%;
+      text-transform: uppercase;
+      font-size: 0.73rem;
+      letter-spacing: 0.05em;
+    }
+
+    .infobox-value {
+      color: var(--text-primary);
+    }
+
+    .card-desc {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      margin-bottom: 1rem;
+    }
+
+    /* Spoiler Block */
+    .spoiler-block {
+      margin-top: auto;
+      padding: 0.75rem;
+      background: rgba(225, 29, 72, 0.07);
+      border-left: 2px solid var(--accent-crimson);
+      border-radius: 0 6px 6px 0;
+      font-size: 0.83rem;
+      color: var(--text-secondary);
+      display: none;
+    }
+
+    body.show-spoilers .spoiler-block {
+      display: block;
+    }
+
+    .spoiler-tag {
+      display: inline-block;
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #fda4af;
+      margin-bottom: 0.25rem;
+    }
+
+    footer {
+      border-top: 1px solid var(--border-subtle);
+      padding: 2rem 1.5rem;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.84rem;
+    }
+
+    @media (max-width: 720px) {
+      .nav-links {
+        gap: 1rem;
+      }
+      .nav-links a:not(.active) {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <nav>
+      <a href="index.html#home" class="brand">AUREN<span>:</span> EVERVEIL</a>
+      <div class="nav-links">
+        <a href="index.html#story">Story</a>
+        <a href="index.html#chapters">Chapters</a>
+        <a href="index.html#characters">Characters</a>
+        <a href="wiki.html" class="active">Wiki</a>
+      </div>
+      <a href="index.html#chapters" class="read-cta">READ ↗</a>
+    </nav>
+  </header>
+
+  <section class="wiki-hero">
+    <div class="eyebrow">VYRON STUDIO · Official Lore Archive</div>
+    <h1>EVERVEIL CODEX &amp; WIKI</h1>
+    <p>Canon records of characters, fractures, blades, and ancient powers across Volume I: The First Rift and beyond.</p>
+  </section>
+
+  <div class="controls-bar">
+    <div class="search-box">
+      <input type="text" id="wikiSearch" placeholder="Search characters, weapons, lore..." aria-label="Search wiki" />
+    </div>
+
+    <div class="filter-tabs" role="tablist">
+      <button class="filter-btn active" data-filter="all">All Entries</button>
+      <button class="filter-btn" data-filter="character">Characters</button>
+      <button class="filter-btn" data-filter="lore">World &amp; Lore</button>
+      <button class="filter-btn" data-filter="weapon">Weapons &amp; Arts</button>
+    </div>
+
+    <label class="spoiler-toggle" title="Reveal late-series forms and peak powers">
+      <input type="checkbox" id="spoilerSwitch" />
+      <span>Reveal Peak / Future Spoilers</span>
+    </label>
+  </div>
+
+  <main class="wiki-container" id="wikiGrid">
+
+    <!-- AUREN VEYL -->
+    <article class="wiki-card" data-category="character" data-keywords="auren veyl traveler rift mark axion protagonist">
+      <div class="card-banner">
+        <span class="category-badge">Character</span>
+        <img src="assets/auren.webp" alt="Auren Veyl" loading="lazy" />
+      </div>
+      <div class="card-body">
+        <h2 class="card-title">Auren Veyl</h2>
+        <div class="card-subtitle">The Quiet Traveler · Bearer of the Mark</div>
+        <table class="infobox-table">
+          <tr><td class="infobox-label">Affiliation</td><td class="infobox-value">Independent / Northern Trail</td></tr>
+          <tr><td class="infobox-label">Companion</td><td class="infobox-value">Axion (Hidden Presence), Mira</td></tr>
+          <tr><td class="infobox-label">Debut</td><td class="infobox-value">Volume I, Chapter 1</td></tr>
+        </table>
+        <p class="card-desc">A black-haired traveler cloaked in dark garments whose investigation of the northern border anomalies draws him directly toward the First Rift. Carries a mysterious glowing blue mark that reacts to fractures in reality.</p>
+        <div class="spoiler-block">
+          <div class="spoiler-tag">True Nature</div>
+          Bound to a hidden primordial presence that should not exist within Everveil's current cycle.
+        </div>
+      </div>
+    </article>
+
+    <!-- ZAREK -->
+    <article class="wiki-card" data-category="character" data-keywords="zarek swordsman grief-iron apophis-zero iron-lung whetstone gale zero-step">
+      <div class="card-banner">
+        <span class="category-badge">Character</span>
+        <img src="assets/zarek.webp" alt="Zarek" loading="lazy" />
+      </div>
+      <div class="card-body">
+        <h2 class="card-title">Zarek</h2>
+        <div class="card-subtitle">The Relentless Swordsman</div>
+        <table class="infobox-table">
+          <tr><td class="infobox-label">Weapon</td><td class="infobox-value">Grief-Iron (Base)</td></tr>
+          <tr><td class="infobox-label">Style</td><td class="infobox-value">Iron-Lung, Whetstone Gale, Zero-Step, Hilt-Anchor</td></tr>
+          <tr><td class="infobox-label">Debut</td><td class="infobox-value">Volume I</td></tr>
+        </table>
+        <p class="card-desc">A disciplined warrior who survives through raw instinct, physical conditioning, and brutal blade fundamentals rather than inherited magic.</p>
+        <div class="spoiler-block">
+          <div class="spoiler-tag">Peak Ascension</div>
+          Eventually wields the cosmic blade <strong>Apophis-Zero</strong>, unleashing conceptual division techniques capable of severing existence itself.
+        </div>
+      </div>
+    </article>
+
+    <!-- DEMON KING BLISTER -->
+    <article class="wiki-card" data-category="character" data-keywords="blister demon king throne northern border antagonist">
+      <div class="card-banner">
+        <span class="category-badge">Character</span>
+        <img src="assets/blister.webp" alt="Demon King Blister" loading="lazy" />
+      </div>
+      <div class="card-body">
+        <h2 class="card-title">Demon King Blister</h2>
+        <div class="card-subtitle">Sovereign of the Northern Disturbances</div>
+        <table class="infobox-table">
+          <tr><td class="infobox-label">Title</td><td class="infobox-value">Demon King</td></tr>
+          <tr><td class="infobox-label">Domain</td><td class="infobox-value">Beyond the Northern Border</td></tr>
+          <tr><td class="infobox-label">Status</td><td class="infobox-value">Active</td></tr>
+        </table>
+        <p class="card-desc">Seated upon an obsidian throne, Blister orchestrates the wave of strange creatures and vanishing settlements along Everveil's northern frontier. His ultimate motives remain shrouded in silence.</p>
+        <div class="spoiler-block">
+          <div class="spoiler-tag">Rift Connection</div>
+          His movements coincide directly with the widening of the First Rift—suggesting his campaign may be a response to what lies beneath Everveil's peace.
+        </div>
+      </div>
+    </article>
+
+    <!-- VESPERA -->
+    <article class="wiki-card" data-category="character" data-keywords="vespera duskweave sovereign unwritten dusk heroine">
+      <div class="card-banner">
+        <span class="category-badge">Character</span>
+        <div class="placeholder-sigil">VESPERA</div>
+      </div>
+      <div class="card-body">
+        <h2 class="card-title">Vespera</h2>
+        <div class="card-subtitle">Weaver of the Dusk</div>
+        <table class="infobox-table">
+          <tr><td class="infobox-label">Authority</td><td class="infobox-value">Duskweave</td></tr>
+          <tr><td class="infobox-label">Role</td><td class="infobox-value">Deuteragonist / Female Lead</td></tr>
+          <tr><td class="infobox-label">Alignment</td><td class="infobox-value">Auren Veyl</td></tr>
+        </table>
+        <p class="card-desc">A pivotal figure entangled in the fate of the First Rift, commanding the elusive shadow-threads of Duskweave.</p>
+        <div class="spoiler-block">
+          <div class="spoiler-tag">Peak Ascension</div>
+          Ascends to become the <strong>Sovereign of the Unwritten Dusk</strong>, transcending conventional cosmology tiers.
+        </div>
+      </div>
+    </article>
+
+    <!-- AXION & MIRA -->
+    <article class="wiki-card" data-category="character" data-keywords="axion mira companion shadow marketplace">
+      <div class="card-banner">
+        <span class="category-badge">Character</span>
+        <div class="placeholder-sigil">AXION &amp; MIRA</div>
+      </div>
+      <div class="card-body">
+        <h2 class="card-title">Axion &amp; Mira</h2>
+        <div class="card-subtitle">Allies Along the Trail</div>
+        <table class="infobox-table">
+          <tr><td class="infobox-label">Axion</td><td class="infobox-value">Hidden Supernatural Presence</td></tr>
+          <tr><td class="infobox-label">Mira</td><td class="infobox-value">Traveling Companion</td></tr>
+          <tr><td class="infobox-label">Key Locations</td><td class="infobox-value">Central Marketplace, Northern Border</td></tr>
+        </table>
+        <p class="card-desc"><strong>Axion</strong> is the enigmatic voice and shadow bound to Auren, acutely aware of the forbidden nature of Auren's mark. <strong>Mira</strong> accompanies Auren through settlements and markets as rumors of the Rift spread.</p>
+      </div>
+    </article>
+
+    <!-- THE FIRST RIFT -->
+    <article class="wiki-card" data-category="lore" data-keywords="first rift fracture crack omen everveil world">
+      <div class="card-banner">
+        <span class="category-badge">World &amp; Lore</span>
+        <div class="placeholder-sigil">THE FIRST RIFT</div>
+      </div>
+      <div class="card-body">
+        <h2 class="card-title">The First Rift</h2>
+        <div class="card-subtitle">“Not every crack begins with a sound.”</div>
+        <table class="infobox-table">
+          <tr><td class="infobox-label">Location</td><td class="infobox-value">Northern Border of Everveil</td></tr>
+          <tr><td class="infobox-label">Phenomena</td><td class="infobox-value">Spatial fractures, black sky-cracks, vanishings</td></tr>
+          <tr><td class="infobox-label">Arc</td><td class="infobox-value">Volume I (Chapters 1–8+)</td></tr>
+        </table>
+        <p class="card-desc">After generations of unbroken peace across Everveil's kingdoms and ancient mountains, a silent black fracture tore open in the sky—heralding unnatural creatures and the coming war.</p>
+      </div>
+    </article>
+
+    <!-- GRIEF-IRON & APOPHIS-ZERO -->
+    <article class="wiki-card" data-category="weapon" data-keywords="grief-iron apophis-zero blade sword techniques">
+      <div class="card-banner">
+        <span class="category-badge">Weapons &amp; Arts</span>
+        <div class="placeholder-sigil">GRIEF-IRON</div>
+      </div>
+      <div class="card-body">
+        <h2 class="card-title">Grief-Iron &amp; Physical Arts</h2>
+        <div class="card-subtitle">Zarek's Starting Arsenal</div>
+        <table class="infobox-table">
+          <tr><td class="infobox-label">Starting Blade</td><td class="infobox-value">Grief-Iron (Heavy Forged Iron)</td></tr>
+          <tr><td class="infobox-label">Core Forms</td><td class="infobox-value">Iron-Lung · Whetstone Gale · Zero-Step · Hilt-Anchor</td></tr>
+        </table>
+        <p class="card-desc">Before touching cosmic power, Zarek relies on <strong>Grief-Iron</strong>—an unforgiving, heavy blade paired with breath control (<em>Iron-Lung</em>), explosive footwork (<em>Zero-Step</em>), and grounded counter-stances (<em>Hilt-Anchor</em>).</p>
+        <div class="spoiler-block">
+          <div class="spoiler-tag">True Evolution</div>
+          Later replaced by <strong>Apophis-Zero</strong>, a cosmic-grade weapon capable of conceptual division.
+        </div>
+      </div>
+    </article>
+
+  </main>
+
+  <footer>
+    © Auren: Everveil · VYRON STUDIO · Official Lore &amp; Character Codex
+  </footer>
+
+  <script>
+    const searchInput = document.getElementById('wikiSearch');
+    const filterButtons = document.querySelectorAll('.filter-btn');
+    const cards = document.querySelectorAll('.wiki-card');
+    const spoilerSwitch = document.getElementById('spoilerSwitch');
+
+    let activeCategory = 'all';
+
+    function filterWiki() {
+      const query = searchInput.value.toLowerCase().trim();
+
+      cards.forEach(card => {
+        const category = card.getAttribute('data-category');
+        const keywords = (card.getAttribute('data-keywords') + ' ' + card.innerText).toLowerCase();
+
+        const matchesCategory = activeCategory === 'all' || category === activeCategory;
+        const matchesQuery = query === '' || keywords.includes(query);
+
+        card.style.display = (matchesCategory && matchesQuery) ? 'flex' : 'none';
+      });
+    }
+
+    filterButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        filterButtons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        activeCategory = btn.getAttribute('data-filter');
+        filterWiki();
+      });
+    });
+
+    searchInput.addEventListener('input', filterWiki);
+
+    spoilerSwitch.addEventListener('change', (e) => {
+      document.body.classList.toggle('show-spoilers', e.target.checked);
+    });
+  </script>
+</body>
+</html>
