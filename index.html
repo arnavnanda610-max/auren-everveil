@@ -27,13 +27,13 @@ section{padding:80px 0}.sectionhead{display:flex;align-items:end;justify-content
 <main>
 <section class="hero" id="home"><div class="hero-art"></div><div class="wrap"><div class="eyebrow">Original dark fantasy manga · Volume I</div><h1>AUREN:<br><span>EVERVEIL</span></h1><div class="sub">THE FIRST RIFT</div><p>In a world that refuses to break, something has begun to tear through its foundations. A quiet traveler, a relentless swordsman, and a secret buried within creation stand at the edge of a coming war.</p><div class="actions"><button class="btn" onclick="openChapter(1)">▶ Begin Chapter 1</button><a href="#story" class="btn secondary">Explore the Story ↓</a></div></div></section>
 <section class="intro" id="story"><div class="wrap intro-grid"><div><div class="eyebrow">Before the first battle</div><h2 style="font:700 clamp(30px,4vw,48px) Cinzel,serif;line-height:1.2">A world with<br>secrets beneath<br>its silence.</h2><p>Everveil has known peace for generations. Its people live beneath distant kingdoms, ancient mountains, and skies that have never given them reason to fear.</p><p>But reports begin to spread from the northern border: strange creatures, vanishing settlements, and a fracture in the air itself. Auren follows the trail—and discovers that someone has been waiting for him.</p><div class="intro-quote">“Not every crack begins with a sound.”</div><div class="meta"><span class="pill">Action</span><span class="pill">Dark Fantasy</span><span class="pill">Adventure</span><span class="pill">Mystery</span></div></div><div class="intro-img" role="img" aria-label="Demon King Blister seated on his throne"></div></div></section>
-<section class="chapters" id="chapters"><div class="wrap"><div class="sectionhead"><div><div class="eyebrow">Volume I · The First Rift</div><h2>Read the Manga</h2></div><span class="small">7 chapters available · More coming soon</span></div><div class="chapter-grid" id="chapterGrid"></div></div></section>
+<section class="chapters" id="chapters"><div class="wrap"><div class="sectionhead"><div><div class="eyebrow">Volume I · The First Rift</div><h2>Read the Manga</h2></div><span class="small">14 chapters available · More coming soon</span></div><div class="chapter-grid" id="chapterGrid"></div></div></section>
 <section class="characters" id="characters"><div class="wrap"><div class="sectionhead"><div><div class="eyebrow">The faces of Everveil</div><h2>Meet the Characters</h2></div><span class="small">Discover their stories as the chapters unfold</span></div><div class="cast">
 <div class="cast-card"><img loading="lazy" src="assets/auren.webp" alt="Auren, a black-haired traveler in a dark cloak"><div class="cast-body"><h3>Auren</h3><p>A quiet traveler whose path leads toward the heart of the First Rift. A hidden presence shares his journey.</p></div></div>
 <div class="cast-card"><img loading="lazy" src="assets/zarek.webp" alt="Zarek, the dark-haired swordsman with a cosmic blade"><div class="cast-body"><h3>Zarek</h3><p>A determined swordsman who relies on discipline, instinct, and a heavy iron blade. The image depicts a much later appearance.</p></div></div>
 <div class="cast-card"><img loading="lazy" src="assets/blister.webp" alt="Demon King Blister on his throne"><div class="cast-body"><h3>Blister</h3><p>The Demon King behind the disturbances at the northern border. His true intentions remain unclear.</p></div></div>
 </div></div></section>
-<div class="next"><div class="eyebrow">The story continues</div><h2>Chapter 8 — Coming Soon</h2><p>The war at the First Rift has only begun.</p><a class="btn secondary" href="#chapters">Return to Chapters ↑</a></div>
+<div class="next"><div class="eyebrow">The story continues</div><h2>Chapter 15 — Coming Soon</h2><p>Beyond the broken gate, Blister awaits.</p><a class="btn secondary" href="#chapters">Return to Chapters ↑</a></div>
 </main><footer><div class="wrap">© Auren: Everveil · Original story and characters. Manga artwork created with AI assistance. · Volume I preview edition.</div></footer>
 </div>
 <div id="reader"><div class="readerbar"><div class="wrap"><button onclick="closeReader()">← Home</button><select id="chapterSelect" aria-label="Select chapter" onchange="openChapter(Number(this.value))"></select><button onclick="changeChapter(-1)" aria-label="Previous chapter">← Prev</button><button onclick="changeChapter(1)" aria-label="Next chapter">Next →</button></div></div><div class="readerhead"><div class="eyebrow">Auren: Everveil · Volume I</div><h1 id="readerTitle"></h1><p>Scroll down to read</p></div><img class="page" id="mangaPage" alt="Manga chapter page" decoding="async"><div class="readerfoot"><div class="reader-note">Preview edition: each chapter is currently presented as one composite manga sheet. Individual full-size pages can be added in future releases.</div><button class="btn secondary" onclick="changeChapter(-1)">← Previous</button><button class="btn" onclick="changeChapter(1)">Next Chapter →</button></div></div>
@@ -45,7 +45,14 @@ const chapters=[
 ['The Ones Who Watch','Unseen forces turn their attention to Auren.'],
 ['Demon King Blister','The journey leads into the Demon King’s territory.'],
 ['The War of Domains','Blister’s army advances toward the First Rift.'],
-['The Unfolding of Authorities','Two opposing laws of existence collide.']
+['The Unfolding of Authorities','Two opposing laws of existence collide.'],
+["The Ground We Keep","Auren must protect the people caught between two opposing laws."],
+["Iron Against the Rift","Zarek holds a collapsing crossing with skill and a battered blade."],
+["The Silent Bell","Vespera discovers how Blister directs the spreading fractures."],
+["The King's Answer","Blister reveals what he intends to make of Everveil."],
+["A Law of Our Own","Auren gives his authority a purpose beyond answering Blister."],
+["A Crack in the Crown","The allies create a single opening in Blister's assault."],
+["Beyond the Broken Gate","The crossing is saved, but Blister's fortress still waits."]
 ];
 let current=1;
 const grid=document.getElementById('chapterGrid'), select=document.getElementById('chapterSelect');
@@ -53,7 +60,7 @@ chapters.forEach((c,i)=>{const n=i+1;grid.insertAdjacentHTML('beforeend',`<a cla
 function openChapter(n){if(n<1||n>chapters.length)return;current=n;document.body.classList.add('reading');select.value=n;document.getElementById('readerTitle').textContent=`Chapter ${n} — ${chapters[n-1][0]}`;const page=document.getElementById('mangaPage');page.src=`assets/chapter-${n}.webp`;page.alt=`Auren Everveil chapter ${n}: ${chapters[n-1][0]}`;history.replaceState(null,'',`#read-${n}`);window.scrollTo({top:0,behavior:'instant'});try{localStorage.setItem('everveil-last-chapter',n)}catch(e){}}
 function closeReader(){document.body.classList.remove('reading');history.replaceState(null,'','#chapters');setTimeout(()=>document.getElementById('chapters').scrollIntoView(),0)}
 function changeChapter(step){let n=current+step;if(n>chapters.length){closeReader();return}if(n<1){closeReader();return}openChapter(n)}
-if(location.hash.startsWith('#read-')){let n=Number(location.hash.replace('#read-',''));if(n>=1&&n<=7)openChapter(n)}
+if(location.hash.startsWith('#read-')){let n=Number(location.hash.replace('#read-',''));if(Number.isInteger(n)&&n>=1&&n<=chapters.length)openChapter(n)}
 window.addEventListener('keydown',e=>{if(!document.body.classList.contains('reading'))return;if(e.key==='ArrowRight')changeChapter(1);if(e.key==='ArrowLeft')changeChapter(-1);if(e.key==='Escape')closeReader()});
 </script>
 </body></html>
