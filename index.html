@@ -143,17 +143,19 @@ window.addEventListener('keydown',e=>{if(!document.body.classList.contains('read
     event.preventDefault();
     submit.disabled = true;
     message.textContent = "Please wait...";
-
-    try {
+   try {
       const credentials = {
         email: email.value.trim(),
         password: password.value
       };
-
       const { data, error } = loginMode
         ? await db.auth.signInWithPassword(credentials)
-        : await db.auth.signUp(credentials);
-
+        : await db.auth.signUp({
+    ...credentials,
+    options: {
+        emailRedirectTo: "https://arnavnanda610-max.github.io/auren-everveil/"
+    }
+});
       if (error) throw error;
 
       password.value = "";
