@@ -91,7 +91,20 @@ if(location.hash.startsWith('#read-')){let n=Number(location.hash.replace('#read
 window.addEventListener('keydown',e=>{if(!document.body.classList.contains('reading')||['SELECT','INPUT','TEXTAREA'].includes(e.target.tagName))return;if(e.key==='ArrowRight')changeChapter(1);if(e.key==='ArrowLeft')changeChapter(-1);if(e.key==='Escape')closeReader()});
 </script>
 
-<div id="auth-panel" style="max-width:420px;margin:40px auto;padding:24px;background:#181818;border:1px solid #444;border-radius:12px;color:white;text-align:center">
+
+<div id="volume-2-lock" style="max-width:420px;margin:40px auto;padding:28px;background:#101525;color:#fff;text-align:center;border:1px solid #c6a56b;border-radius:16px;">
+  <h2 style="color:#d4af70;">AUREN: EVERVEIL</h2>
+  <h3>Volume II — Premium Access</h3>
+  <p>Unlock the next chapter of Auren's journey.</p>
+  <h1 style="color:#d4af70;">₹49</h1>
+  <p>One-time purchase. Lifetime access.</p>
+  <button type="button" disabled style="padding:12px 24px;background:#c6a56b;color:#101525;border:0;border-radius:8px;opacity:.6;">
+    Unlock Volume II
+  </button>
+  <p style="font-size:12px;color:#aaa;">Coming soon — payments not enabled</p>
+</div>
+
+  <div id="auth-panel" style="max-width:420px;margin:40px auto;padding:24px;background:#181818;border:1px solid #444;border-radius:12px;color:white;text-align:center">
   <h2>AUREN: EVERVEIL</h2>
   <p>Join the Everveil community</p>
 
