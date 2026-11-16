@@ -90,4 +90,104 @@ function changeChapter(step){let n=current+step;if(n>chapters.length){closeReade
 if(location.hash.startsWith('#read-')){let n=Number(location.hash.replace('#read-',''));if(Number.isInteger(n)&&n>=1&&n<=chapters.length)openChapter(n)}
 window.addEventListener('keydown',e=>{if(!document.body.classList.contains('reading')||['SELECT','INPUT','TEXTAREA'].includes(e.target.tagName))return;if(e.key==='ArrowRight')changeChapter(1);if(e.key==='ArrowLeft')changeChapter(-1);if(e.key==='Escape')closeReader()});
 </script>
+
+<div id="auth-panel" style="max-width:420px;margin:40px auto;padding:24px;background:#181818;border:1px solid #444;border-radius:12px;color:white;text-align:center">
+  <h2>AUREN: EVERVEIL</h2>
+  <p>Join the Everveil community</p>
+
+  <form id="auth-form">
+    <input id="auth-email" type="email" placeholder="Email address" required
+      style="width:100%;padding:12px;margin:8px 0;box-sizing:border-box">
+    <input id="auth-password" type="password" placeholder="Password (at least 6 characters)" minlength="6" required
+      style="width:100%;padding:12px;margin:8px 0;box-sizing:border-box">
+
+    <button type="submit" id="auth-submit">Create Account</button>
+  </form>
+
+  <p id="auth-message" role="status"></p>
+  <button type="button" id="auth-toggle">Already registered? Log In</button>
+  <button type="button" id="auth-logout" hidden>Log Out</button>
+</div>
+
+<script>
+(() => {
+  const form = document.getElementById("auth-form");
+  const email = document.getElementById("auth-email");
+  const password = document.getElementById("auth-password");
+  const message = document.getElementById("auth-message");
+  const submit = document.getElementById("auth-submit");
+  const toggle = document.getElementById("auth-toggle");
+  const logout = document.getElementById("auth-logout");
+
+  let loginMode = false;
+
+  function showUser(user) {
+    form.hidden = !!user;
+    toggle.hidden = !!user;
+    logout.hidden = !user;
+    message.textContent = user
+      ? "Logged in as " + user.email
+      : "";
+  }
+
+  toggle.addEventListener("click", () => {
+    loginMode = !loginMode;
+    submit.textContent = loginMode ? "Log In" : "Create Account";
+    toggle.textContent = loginMode
+      ? "Need an account? Sign Up"
+      : "Already registered? Log In";
+    message.textContent = "";
+  });
+
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    submit.disabled = true;
+    message.textContent = "Please wait...";
+
+    try {
+      const credentials = {
+        email: email.value.trim(),
+        password: password.value
+      };
+
+      const { data, error } = loginMode
+        ? await db.auth.signInWithPassword(credentials)
+        : await db.auth.signUp(credentials);
+
+      if (error) throw error;
+
+      password.value = "";
+
+      if (!loginMode && !data.session) {
+        message.textContent =
+          "Account created! Check your email to confirm it.";
+      } else {
+        showUser(data.user);
+      }
+    } catch (error) {
+      message.textContent = error.message || "Authentication failed.";
+    } finally {
+      submit.disabled = false;
+    }
+  });
+
+  logout.addEventListener("click", async () => {
+    const { error } = await db.auth.signOut();
+    if (error) {
+      message.textContent = error.message;
+      return;
+    }
+    showUser(null);
+  });
+
+  db.auth.getUser().then(({ data }) => {
+    if (data.user) showUser(data.user);
+  });
+
+  db.auth.onAuthStateChange((_event, session) => {
+    if (session?.user) showUser(session.user);
+    else if (_event === "SIGNED_OUT") showUser(null);
+  });
+})();
+</script>
 </body></html>
