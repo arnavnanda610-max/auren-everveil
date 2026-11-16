@@ -120,7 +120,23 @@ window.addEventListener('keydown',e=>{if(!document.body.classList.contains('read
   const logout = document.getElementById("auth-logout");
 
   let loginMode = false;
+async function checkVolumeAccess(user) {
+  if (!user) return;
 
+  const { data, error } = await db
+    .from("volume_access")
+    .select("volume_number")
+    .eq("user_id", user.id)
+    .eq("volume_number", 2)
+    .maybeSingle();
+
+  if (error) {
+    console.error("Volume access check failed:", error);
+    return;
+  }
+
+  console.log(data ? "Volume II: Owned" : "Volume II: Not purchased");
+}
   function showUser(user) {
     form.hidden = !!user;
     toggle.hidden = !!user;
@@ -128,6 +144,8 @@ window.addEventListener('keydown',e=>{if(!document.body.classList.contains('read
     message.textContent = user
       ? "Logged in as " + user.email
       : "";
+
+    checkVolumeAccess(user);
   }
 
   toggle.addEventListener("click", () => {
