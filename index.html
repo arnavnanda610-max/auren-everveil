@@ -6,6 +6,15 @@
 <meta name="theme-color" content="#09090e">
 <meta name="description" content="Auren: Everveil — an original dark fantasy manga. Read Volume I: The First Rift and Volume II: The Crown of Ruin.">
 <title>AUREN: EVERVEIL — Read the Manga</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+  const SUPABASE_URL = "https://graurdiqskbjzlxuyrcg.supabase.co";
+  const SUPABASE_KEY = "sb_publishable_NhKz1JcN5m-RB7vpsnEebw_LtrmjMlZ";
+  const db = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+  );
+</script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Inter:wght@400;500;600;700;800&display=swap');
 :root{--bg:#09090e;--panel:#14141d;--line:#30303d;--muted:#a7a5b5;--text:#f5f2f8;--accent:#b99aff;--gold:#e5c58a}
