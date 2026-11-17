@@ -106,11 +106,11 @@ async function openChapter(n){
   const {data:authData,error:authError}=await db.auth.getUser();
   if(authError)throw authError;
   if(request!==chapterRequest)return;
-  if(!authData.user){notice.textContent='Volume II is premium. Please log in below; purchasing is coming soon.';return;}
+  if(!authData.user){notice.textContent='Volume II is premium. Log in below, pay ₹49 using UPI, and submit your transaction reference for verification.';return;}
   const {data:owned,error:accessError}=await db.from('volume_access').select('volume_number').eq('user_id',authData.user.id).eq('volume_number',2).maybeSingle();
   if(accessError)throw accessError;
   if(request!==chapterRequest)return;
-  if(!owned){notice.textContent='Volume II is not unlocked on this account. ₹49 purchases are coming soon.';return;}
+  if(!owned){notice.textContent='Volume II is not unlocked yet. Submit your ₹49 UPI payment reference below and wait for manual verification.';return;}
   const {data:file,error:downloadError}=await db.storage.from('premium-chapters').download(`chapter-${n}.webp`);
   if(downloadError)throw downloadError;
   if(request!==chapterRequest)return;
@@ -124,17 +124,57 @@ window.addEventListener('keydown',e=>{if(!document.body.classList.contains('read
 </script>
 
 
-<div id="volume-2-lock" style="max-width:420px;margin:40px auto;padding:28px;background:#101525;color:#fff;text-align:center;border:1px solid #c6a56b;border-radius:16px;">
+<div id="volume-2-lock" style="max-width:470px;margin:40px auto;padding:28px;background:#101525;color:#fff;text-align:center;border:1px solid #c6a56b;border-radius:16px;">
   <h2 style="color:#d4af70;">AUREN: EVERVEIL</h2>
   <h3>Volume II — Premium Access</h3>
-  <p>Unlock the next chapter of Auren's journey.</p>
+  <p>Chapters 15–28 · One-time access</p>
   <h1 style="color:#d4af70;">₹49</h1>
-  <p>One-time purchase. Lifetime access.</p>
-  <button type="button" disabled style="padding:12px 24px;background:#c6a56b;color:#101525;border:0;border-radius:8px;opacity:.6;">
-    Unlock Volume II
-  </button>
-  <p style="font-size:12px;color:#aaa;">Coming soon — payments not enabled</p>
+  <p>Pay with any UPI app. Access is granted after manual payment verification.</p>
+  <div id="everveil-upi-qr" style="background:white;padding:12px;border-radius:10px;display:inline-block;max-width:100%;margin:8px auto"></div>
+  <p style="font-size:13px;color:#c6c1d4">Scan this QR with a UPI app to pay ₹49</p>
+  <p style="overflow-wrap:anywhere;font-weight:700;color:#e5c58a" id="everveil-upi-id">9803372726@fam</p>
+  <button type="button" id="everveil-copy-upi" style="padding:9px 16px;background:#2e2a3d;color:white;border:1px solid #8d7bb5;border-radius:7px">Copy UPI ID</button>
+  <a href="upi://pay?pa=9803372726%40fam&amp;pn=Arnav&amp;am=49.00&amp;cu=INR&amp;tn=Auren%20Everveil%20Volume%202" style="display:inline-block;margin:8px;padding:10px 14px;border-radius:7px;background:#c6a56b;color:#101525;font-weight:700">Open UPI app</a>
+  <p style="font-size:12px;color:#c6c1d4">Before paying, check that your UPI app shows the expected recipient. Never enter your UPI PIN on this website.</p>
+  <hr style="border:0;border-top:1px solid #4a4154;margin:22px 0">
+  <h3>Already paid?</h3>
+  <p style="font-size:13px;color:#c6c1d4">Log in below, then submit the UPI transaction/reference number from your payment receipt. Do not send a PIN, password, or bank details.</p>
+  <form id="everveil-payment-form">
+    <input id="everveil-payment-ref" type="text" required minlength="8" maxlength="64" pattern="[A-Za-z0-9-]+" placeholder="UPI transaction/reference number" autocomplete="off" style="width:100%;padding:12px;border-radius:7px;border:1px solid #8d7bb5;background:#fff;color:#111">
+    <button type="submit" id="everveil-payment-submit" style="margin:12px 0;padding:12px 22px;background:#c6a56b;color:#101525;border:0;border-radius:8px;font-weight:700">Submit for verification</button>
+  </form>
+  <p id="everveil-payment-status" role="status" style="font-size:13px;line-height:1.6"></p>
+  <p style="font-size:12px;color:#aaa">Submitting a reference does not unlock chapters. Access is granted only after the payment is verified.</p>
 </div>
+<script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+<script>
+(() => {
+ const qr=document.getElementById('everveil-upi-qr');
+ const uri='upi://pay?pa=9803372726%40fam&pn=Arnav&am=49.00&cu=INR&tn=Auren%20Everveil%20Volume%202';
+ if(typeof QRCode==='function')new QRCode(qr,{text:uri,width:224,height:224,correctLevel:QRCode.CorrectLevel.M});
+ else qr.textContent='QR unavailable — copy the UPI ID above instead.';
+ document.getElementById('everveil-copy-upi').addEventListener('click',async()=>{
+  try{await navigator.clipboard.writeText('9803372726@fam');document.getElementById('everveil-payment-status').textContent='UPI ID copied.';}
+  catch(e){document.getElementById('everveil-payment-status').textContent='Please select and copy the UPI ID above.';}
+ });
+ document.getElementById('everveil-payment-form').addEventListener('submit',async e=>{
+  e.preventDefault();
+  const status=document.getElementById('everveil-payment-status');
+  const btn=document.getElementById('everveil-payment-submit');
+  const paymentId=document.getElementById('everveil-payment-ref').value.trim();
+  btn.disabled=true;status.textContent='Submitting your payment reference…';
+  try{
+   const {data:{user},error:authError}=await db.auth.getUser();
+   if(authError||!user){status.textContent='Please log in below before submitting your reference.';return;}
+   const {error}=await db.from('purchases').insert({user_id:user.id,payment_id:paymentId,status:'pending'});
+   if(error)throw error;
+   status.textContent='Request received! Your payment is pending manual verification. Volume II stays locked until approval.';
+   document.getElementById('everveil-payment-ref').value='';
+  }catch(error){status.textContent='Could not submit the reference. Please try again.';console.error('Payment reference submission failed:',error);}
+  finally{btn.disabled=false;}
+ });
+})();
+</script>
 
   <div id="auth-panel" style="max-width:420px;margin:40px auto;padding:24px;background:#181818;border:1px solid #444;border-radius:12px;color:white;text-align:center">
   <h2>AUREN: EVERVEIL</h2>
