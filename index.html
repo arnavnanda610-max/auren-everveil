@@ -255,4 +255,28 @@ async function checkVolumeAccess(user) {
   });
 })();
 </script>
+
+<div id="payment-test-panel" style="max-width:420px;margin:24px auto;padding:22px;background:#181620;border:1px solid #79669d;border-radius:12px;color:#f5f2f8;text-align:center">
+ <h3 style="font-family:Cinzel,serif">Volume II — Connection Test</h3>
+ <p style="color:#c6bfce;font-size:13px">Safe test only. No payment will be collected or chapters unlocked.</p>
+ <button id="payment-test-button" type="button" class="btn">Test Payment Connection</button>
+ <p id="payment-test-result" role="status" style="font-size:13px;line-height:1.7;overflow-wrap:anywhere"></p>
+</div>
+<script>
+document.getElementById('payment-test-button').addEventListener('click',async()=>{
+ const button=document.getElementById('payment-test-button');
+ const result=document.getElementById('payment-test-result');
+ button.disabled=true;result.textContent='Checking login and test function…';
+ try{
+  const {data:{session},error:sessionError}=await db.auth.getSession();
+  if(sessionError||!session){result.textContent='Not logged in. Please log in first.';return;}
+  const {data,error}=await db.functions.invoke('volume2-payment-test',{body:{}});
+  if(error)throw error;
+  if(data?.mode==='test'&&data?.amount_inr===49&&data?.checkout_enabled===false&&data?.access_granted===false){
+    result.textContent='PASS — Logged-in connection works. ₹49 test mode only; no payment collected or access granted.';
+  }else{result.textContent='Unexpected test response. No payment was attempted.';}
+ }catch(e){result.textContent='Connection test failed: '+(e?.message||'Unknown error');}
+ finally{button.disabled=false;}
+});
+</script>
 </body></html>
