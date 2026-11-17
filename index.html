@@ -83,9 +83,41 @@ const chapters=[
 let current=1;
 const grid=document.getElementById('chapterGrid'), grid2=document.getElementById('chapterGrid2'), select=document.getElementById('chapterSelect');
 const groups=[document.createElement('optgroup'),document.createElement('optgroup')];groups[0].label='Volume I — The First Rift';groups[1].label='Volume II — The Crown of Ruin';groups.forEach(g=>select.appendChild(g));
-chapters.forEach((c,i)=>{const n=i+1;(n<=14?grid:grid2).insertAdjacentHTML('beforeend',`<a class="chapter-card" href="#read-${n}" onclick="openChapter(${n});return false"><div class="cover"><img loading="lazy" src="assets/chapter-${n}.webp" alt="Chapter ${n} manga preview"></div><div class="chapter-info"><div class="number">CHAPTER ${String(n).padStart(2,'0')}</div><h3>${c[0]}</h3><p>${c[1]}</p><span class="readlink">READ CHAPTER →</span></div></a>`);groups[n<=14?0:1].appendChild(new Option(`Chapter ${n}: ${c[0]}`,n));});
-function openChapter(n){if(!Number.isInteger(n)||n<1||n>chapters.length)return;current=n;document.getElementById('readerVolume').textContent=n<=14?'Auren: Everveil · Volume I — The First Rift':'Auren: Everveil · Volume II — The Crown of Ruin';document.body.classList.add('reading');select.value=n;document.getElementById('readerTitle').textContent=`Chapter ${n} — ${chapters[n-1][0]}`;const page=document.getElementById('mangaPage');page.src=`assets/chapter-${n}.webp`;page.alt=`Auren Everveil chapter ${n}: ${chapters[n-1][0]}`;history.replaceState(null,'',`#read-${n}`);window.scrollTo({top:0,behavior:'instant'});try{localStorage.setItem('everveil-last-chapter',n)}catch(e){}}
-function closeReader(){const volume=current<=14?'volume-1':'volume-2';document.body.classList.remove('reading');history.replaceState(null,'','#'+volume);setTimeout(()=>document.getElementById(volume).scrollIntoView(),0)}
+chapters.forEach((c,i)=>{const n=i+1;(n<=14?grid:grid2).insertAdjacentHTML('beforeend',`<a class="chapter-card" href="#read-${n}" onclick="openChapter(${n});return false"><div class="cover"><img loading="lazy" ${n<=14?`src="assets/chapter-${n}.webp"`:`src="assets/auren.webp"`} alt="${n<=14?`Chapter ${n} manga preview`:`Volume II premium chapter cover`}"></div><div class="chapter-info"><div class="number">CHAPTER ${String(n).padStart(2,'0')}</div><h3>${c[0]}</h3><p>${c[1]}</p><span class="readlink">READ CHAPTER →</span></div></a>`);groups[n<=14?0:1].appendChild(new Option(`Chapter ${n}: ${c[0]}`,n));});
+let chapterRequest=0;
+let premiumObjectUrl=null;
+async function openChapter(n){
+ if(!Number.isInteger(n)||n<1||n>chapters.length)return;
+ const request=++chapterRequest;
+ current=n;
+ document.getElementById('readerVolume').textContent=n<=14?'Auren: Everveil · Volume I — The First Rift':'Auren: Everveil · Volume II — The Crown of Ruin';
+ document.body.classList.add('reading');select.value=n;
+ document.getElementById('readerTitle').textContent=`Chapter ${n} — ${chapters[n-1][0]}`;
+ const page=document.getElementById('mangaPage');page.removeAttribute('src');
+ page.alt=`Auren Everveil chapter ${n}: ${chapters[n-1][0]}`;
+ if(premiumObjectUrl){URL.revokeObjectURL(premiumObjectUrl);premiumObjectUrl=null;}
+ let notice=document.getElementById('premiumReaderNotice');
+ if(!notice){notice=document.createElement('p');notice.id='premiumReaderNotice';notice.setAttribute('role','status');notice.style.cssText='text-align:center;color:#e5c58a;padding:24px';page.before(notice);}
+ notice.textContent=n<=14?'':'Checking your Volume II access…';
+ history.replaceState(null,'',`#read-${n}`);window.scrollTo({top:0,behavior:'instant'});
+ try{localStorage.setItem('everveil-last-chapter',n)}catch(e){}
+ if(n<=14){page.src=`assets/chapter-${n}.webp`;return;}
+ try{
+  const {data:authData,error:authError}=await db.auth.getUser();
+  if(authError)throw authError;
+  if(request!==chapterRequest)return;
+  if(!authData.user){notice.textContent='Volume II is premium. Please log in below; purchasing is coming soon.';return;}
+  const {data:owned,error:accessError}=await db.from('volume_access').select('volume_number').eq('user_id',authData.user.id).eq('volume_number',2).maybeSingle();
+  if(accessError)throw accessError;
+  if(request!==chapterRequest)return;
+  if(!owned){notice.textContent='Volume II is not unlocked on this account. ₹49 purchases are coming soon.';return;}
+  const {data:file,error:downloadError}=await db.storage.from('premium-chapters').download(`chapter-${n}.webp`);
+  if(downloadError)throw downloadError;
+  if(request!==chapterRequest)return;
+  premiumObjectUrl=URL.createObjectURL(file);page.src=premiumObjectUrl;notice.textContent='';
+ }catch(error){if(request===chapterRequest){notice.textContent='Unable to load this premium chapter. Please try again later.';console.error('Premium chapter load failed:',error);}}
+}
+function closeReader(){++chapterRequest;if(premiumObjectUrl){URL.revokeObjectURL(premiumObjectUrl);premiumObjectUrl=null;}const volume=current<=14?'volume-1':'volume-2';document.body.classList.remove('reading');history.replaceState(null,'','#'+volume);setTimeout(()=>document.getElementById(volume).scrollIntoView(),0)}
 function changeChapter(step){let n=current+step;if(n>chapters.length){closeReader();return}if(n<1){closeReader();return}openChapter(n)}
 if(location.hash.startsWith('#read-')){let n=Number(location.hash.replace('#read-',''));if(Number.isInteger(n)&&n>=1&&n<=chapters.length)openChapter(n)}
 window.addEventListener('keydown',e=>{if(!document.body.classList.contains('reading')||['SELECT','INPUT','TEXTAREA'].includes(e.target.tagName))return;if(e.key==='ArrowRight')changeChapter(1);if(e.key==='ArrowLeft')changeChapter(-1);if(e.key==='Escape')closeReader()});
