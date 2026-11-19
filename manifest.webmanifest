@@ -1,0 +1,18 @@
+{
+  "name": "Auren: Everveil",
+  "short_name": "Everveil",
+  "description": "Read the Auren: Everveil manga",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#09090e",
+  "theme_color": "#09090e",
+  "icons": [
+    {
+      "src": "everveil-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
