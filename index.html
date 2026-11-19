@@ -655,4 +655,33 @@ form.reset();
 finally{button.disabled=false}
 });
 })();
+</script><section id="ban-appeal" style="max-width:650px;margin:35px auto;padding:22px;border:1px solid #685578;border-radius:12px;background:#171424;color:#eee"><h2>Appeal a Community Ban</h2><p>If your account has been banned from posting, you can ask the site owner to reconsider. Appeals are reviewed manually and approval is not guaranteed.</p><form id="ban-appeal-form"><label for="ban-appeal-text">Why should your ban be reconsidered?</label><textarea id="ban-appeal-text" required minlength="20" maxlength="2000" rows="5" style="width:100%;box-sizing:border-box;background:#fff;color:#111;padding:10px;border-radius:8px" placeholder="Explain what happened and why you are requesting another chance"></textarea><button type="submit" style="margin-top:12px">Submit appeal to owner</button></form><p id="ban-appeal-status" role="status"></p><div id="ban-appeal-history"></div></section><script>
+(()=>{
+const form=document.getElementById("ban-appeal-form"),status=document.getElementById("ban-appeal-status"),history=document.getElementById("ban-appeal-history");
+async function load(){
+try{
+const {data:{user}}=await db.auth.getUser();
+if(!user){status.textContent="Sign in to check your ban and submit an appeal.";form.hidden=true;history.replaceChildren();return}
+const {data:bans,error:banError}=await db.from("community_bans").select("user_id,reason,expires_at").eq("user_id",user.id).limit(1);
+const {data:appeals,error:appealError}=await db.from("community_ban_appeals").select("status,created_at").eq("user_id",user.id).order("created_at",{ascending:false}).limit(5);
+if(appealError)throw appealError;
+history.replaceChildren();for(const item of appeals||[]){const p=document.createElement("p");p.textContent="Appeal from "+new Date(item.created_at).toLocaleDateString()+": "+item.status;history.append(p)}
+const pending=(appeals||[]).some(x=>x.status==="pending");
+if(!banError&&bans?.length){
+const ban=bans[0],active=!ban.expires_at||new Date(ban.expires_at)>new Date();
+form.hidden=!active||pending;status.textContent=!active?"Your previous ban has expired.":pending?"Your appeal is awaiting the owner's decision.":"You can submit one appeal while your ban is active.";return;
+}
+form.hidden=pending;status.textContent=pending?"Your appeal is awaiting review.":"Appeals are only accepted for currently banned accounts.";
+}catch(e){status.textContent="Unable to load appeal status: "+e.message;form.hidden=true}
+}
+form.addEventListener("submit",async e=>{
+e.preventDefault();const btn=form.querySelector("button");btn.disabled=true;status.textContent="Sending appeal…";
+try{const {data:{user}}=await db.auth.getUser();if(!user)throw Error("Sign in first");
+const {error}=await db.from("community_ban_appeals").insert({user_id:user.id,appeal_text:document.getElementById("ban-appeal-text").value.trim()});
+if(error)throw error;form.reset();await load();status.textContent="Your appeal was submitted to the owner for review.";
+}catch(err){status.textContent=err.code==="23505"?"You already have a pending appeal.":err.message}
+finally{btn.disabled=false}
+});
+db.auth.onAuthStateChange(()=>setTimeout(load,0));load();
+})();
 </script></body></html>
