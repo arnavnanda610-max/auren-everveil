@@ -212,6 +212,9 @@ window.addEventListener('keydown',e=>{if(!document.body.classList.contains('read
 
   <p id="auth-message" role="status"></p>
   <button type="button" id="auth-toggle">Already registered? Log In</button>
+  <p><button type="button" id="auth-forgot" style="background:none;border:0;color:#d8bcff;text-decoration:underline;cursor:pointer">Forgot password?</button></p>
+  <form id="auth-reset-request" hidden><label for="auth-reset-email">Email for password reset</label><input id="auth-reset-email" type="email" autocomplete="email" required style="width:100%;padding:12px;margin:8px 0;box-sizing:border-box"><button type="submit">Send reset link</button><button type="button" id="auth-reset-cancel">Cancel</button></form>
+  <form id="auth-new-password" hidden><label for="auth-new-password-value">Choose a new password</label><input id="auth-new-password-value" type="password" minlength="8" autocomplete="new-password" required style="width:100%;padding:12px;margin:8px 0;box-sizing:border-box"><label for="auth-new-password-confirm">Confirm new password</label><input id="auth-new-password-confirm" type="password" minlength="8" autocomplete="new-password" required style="width:100%;padding:12px;margin:8px 0;box-sizing:border-box"><button type="submit">Save new password</button></form>
   <button type="button" id="auth-logout" hidden>Log Out</button>
 </div>
 
@@ -226,6 +229,67 @@ window.addEventListener('keydown',e=>{if(!document.body.classList.contains('read
   const logout = document.getElementById("auth-logout");
 
   let loginMode = false;
+  const forgot = document.getElementById("auth-forgot");
+  const resetRequest = document.getElementById("auth-reset-request");
+  const resetCancel = document.getElementById("auth-reset-cancel");
+  const newPassword = document.getElementById("auth-new-password");
+  let recovering = false;
+  function showResetForm() {
+    recovering = true;
+    form.hidden = true; toggle.hidden = true; logout.hidden = true;
+    forgot.hidden = true; resetRequest.hidden = true; newPassword.hidden = false;
+    message.textContent = "Enter a new password for your account.";
+    document.getElementById("auth-new-password-value").focus();
+  }
+  forgot.addEventListener("click", () => {
+    resetRequest.hidden = false;
+    form.hidden = true; toggle.hidden = true; forgot.hidden = true;
+    document.getElementById("auth-reset-email").value = email.value;
+    message.textContent = "";
+  });
+  resetCancel.addEventListener("click", () => {
+    resetRequest.hidden = true; form.hidden = false; toggle.hidden = false; forgot.hidden = false;
+    message.textContent = "";
+  });
+  resetRequest.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const button = resetRequest.querySelector('button[type="submit"]');
+    button.disabled = true;
+    message.textContent = "Sending reset email…";
+    try {
+      const { error } = await db.auth.resetPasswordForEmail(document.getElementById("auth-reset-email").value.trim(), {
+        redirectTo: "https://arnavnanda610-max.github.io/auren-everveil/"
+      });
+      if (error) throw error;
+      message.textContent = "If an account exists for that email, a password-reset link will arrive shortly. Check spam too.";
+    } catch (error) {
+      message.textContent = "Could not send reset email: " + (error.message || "Please try again.");
+    } finally { button.disabled = false; }
+  });
+  newPassword.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const p = document.getElementById("auth-new-password-value").value;
+    const confirm = document.getElementById("auth-new-password-confirm").value;
+    if (p !== confirm) { message.textContent = "Passwords do not match."; return; }
+    const button = newPassword.querySelector('button[type="submit"]');
+    button.disabled = true;
+    message.textContent = "Updating password…";
+    try {
+      const { error } = await db.auth.updateUser({ password: p });
+      if (error) throw error;
+      newPassword.reset(); newPassword.hidden = true; recovering = false;
+      forgot.hidden = false;
+      message.textContent = "Password changed successfully. Your account is ready.";
+      const { data } = await db.auth.getUser();
+      showUser(data.user || null);
+    } catch (error) {
+      message.textContent = "Could not update password: " + (error.message || "Please request a new link.");
+    } finally { button.disabled = false; }
+  });
+  if (location.hash === "#forgot-password") {
+    setTimeout(() => forgot.click(), 0);
+  }
+
 async function checkVolumeAccess(user) {
   if (!user) return;
 
@@ -244,6 +308,7 @@ async function checkVolumeAccess(user) {
   console.log(data ? "Volume II: Owned" : "Volume II: Not purchased");
 }
   function showUser(user) {
+    if (recovering) return;
     form.hidden = !!user;
     toggle.hidden = !!user;
     logout.hidden = !user;
@@ -311,6 +376,7 @@ async function checkVolumeAccess(user) {
   });
 
   db.auth.onAuthStateChange((_event, session) => {
+    if (_event === "PASSWORD_RECOVERY") { showResetForm(); return; }
     if (session?.user) showUser(session.user);
     else if (_event === "SIGNED_OUT") showUser(null);
   });
