@@ -3,7 +3,7 @@
 <head>
 <meta name="google-site-verification" content="KO1_foNrNV7iXOm7rPdhaZIV7fNruVUK0IyrVlFM0qc" />
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#09090e">
+<meta name="theme-color" content="#09090e"><link rel="manifest" href="manifest.webmanifest"><link rel="icon" type="image/svg+xml" href="everveil-icon.svg">
 <meta name="description" content="Auren: Everveil — an original dark fantasy manga. Read Volume I: The First Rift and Volume II: The Crown of Ruin.">
 <title>AUREN: EVERVEIL — Read the Manga</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -348,6 +348,19 @@ async function checkVolumeAccess(user) {
       if (error) throw error;
 
       password.value = "";
+      if(loginMode && data.session){
+        const {data:assurance}=await db.auth.mfa.getAuthenticatorAssuranceLevel();
+        if(assurance?.nextLevel==="aal2" && assurance?.currentLevel!=="aal2"){
+          const {data:factors}=await db.auth.mfa.listFactors();
+          const factor=factors?.totp?.find(x=>x.status==="verified");
+          if(factor){
+            const code=prompt("Enter your six-digit Everveil authenticator code to complete login:");
+            if(!code){await db.auth.signOut();message.textContent="Authenticator verification required. Please log in again.";return}
+            const {error:mfaError}=await db.auth.mfa.challengeAndVerify({factorId:factor.id,code:code.trim()});
+            if(mfaError){await db.auth.signOut();throw new Error("Authenticator verification failed: "+mfaError.message)}
+          }
+        }
+      }
 
       if (!loginMode && !data.session) {
         message.textContent =
